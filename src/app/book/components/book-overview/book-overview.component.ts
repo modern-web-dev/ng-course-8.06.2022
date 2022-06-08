@@ -34,4 +34,8 @@ export class BookOverviewComponent {
   isSelectedBookOf(book: Book): boolean {
     return this.selectedBook === book;
   }
+
+  updateBooksWith(updatedBook: Book) {
+    console.log(updatedBook);
+  }
 }
