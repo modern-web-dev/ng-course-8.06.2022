@@ -20,7 +20,8 @@
     </table>
   </section>
   <section class="col-4 align-self-center">
-    <ba-book-details></ba-book-details>
+    <ba-book-details *ngIf="selectedBook"
+                     [book]="selectedBook"></ba-book-details>
   </section>
 </div>
 <output>
