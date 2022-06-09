@@ -1,5 +1,5 @@
 import {Book} from '../model/book';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, delay, Observable, of} from 'rxjs';
 
 export class BookService {
   private readonly booksSubject = new BehaviorSubject<Book[]>([
@@ -35,5 +35,9 @@ export class BookService {
       subscriber.next(newBook);
       subscriber.complete();
     });
+  }
+
+  search(query: string): Observable<string[]> {
+    return of([`${query}-1`, `${query}-2`, `${query}-3`]).pipe(delay(2000));
   }
 }
