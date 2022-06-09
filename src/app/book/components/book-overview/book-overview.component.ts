@@ -1,46 +1,26 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {Book} from '../../model/book';
 import {BookService} from '../../services/book.service';
-import {
-  debounceTime,
-  distinct,
-  distinctUntilChanged,
-  flatMap,
-  fromEvent,
-  map,
-  Observable,
-  OperatorFunction,
-  pipe,
-  switchMap
-} from 'rxjs';
+import {Observable, Subject, takeUntil} from 'rxjs';
 
 @Component({
   selector: 'ba-book-overview',
   templateUrl: './book-overview.component.html',
   styleUrls: ['./book-overview.component.scss']
 })
-export class BookOverviewComponent implements OnInit, OnDestroy, AfterViewInit {
-  readonly bookService: BookService;
+export class BookOverviewComponent implements OnDestroy {
   readonly books$: Observable<Book[]>;
-  results$: Observable<string[]> | undefined;
   selectedBook: Book | null = null;
-  @ViewChild("searchInput")
-  private searchInputElementRef: ElementRef | undefined;
 
-  // private timeoutHandle: number | null = null;
+  readonly unsubscribe = new Subject<void>();
 
-  constructor() {
-    this.bookService = new BookService();
+  constructor(private readonly bookService: BookService) {
     this.books$ = this.bookService.findAll();
   }
 
-  ngOnInit(): void {
-    // this.books$.pipe()
-
-  }
-
   ngOnDestroy(): void {
-    // this.subscription?.unsubscribe();
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   selectBook(book: Book): void {
@@ -53,27 +33,9 @@ export class BookOverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateBooksWith(book: Book) {
     this.bookService.update(book)
+      .pipe(
+        takeUntil(this.unsubscribe)
+      )
       .subscribe(updatedBook => this.selectedBook = updatedBook);
   }
-
-  ngAfterViewInit(): void {
-    const searchInputElement = this.searchInputElementRef?.nativeElement as HTMLInputElement;
-    fromEvent(searchInputElement, 'input')
-      .pipe(
-        mapFromEventToTargetValue(),
-        debounceTime(500),
-        distinctUntilChanged(),
-        switchMap(query => this.bookService.search(query))
-      )
-      .subscribe(results => {
-        console.log(results);
-      })
-  }
-}
-
-function mapFromEventToTargetValue(): OperatorFunction<Event, string> {
-  return map(event => {
-    const searchInput = event.target as HTMLInputElement;
-    return searchInput.value;
-  })
 }
