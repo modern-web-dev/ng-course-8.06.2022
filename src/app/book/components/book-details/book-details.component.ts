@@ -19,10 +19,13 @@ export class BookDetailsComponent {
     const form = event.target as HTMLFormElement;
     const authorInputElement = form.querySelector<HTMLInputElement>('#author');
     const titleInputElement = form.querySelector<HTMLInputElement>('#title');
-    const updatedBook: Book = {
-      author: authorInputElement?.value ?? '',
-      title: titleInputElement?.value ?? ''
+    if (this.book) {
+      const updatedBook: Book = {
+        id: this.book.id,
+        author: authorInputElement?.value ?? '',
+        title: titleInputElement?.value ?? ''
+      }
+      this.bookChange.emit(updatedBook);
     }
-    this.bookChange.emit(updatedBook);
   }
 }

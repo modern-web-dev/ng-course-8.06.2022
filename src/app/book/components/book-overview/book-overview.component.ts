@@ -1,28 +1,30 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Book} from '../../model/book';
 import {BookService} from '../../services/book.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ba-book-overview',
   templateUrl: './book-overview.component.html',
   styleUrls: ['./book-overview.component.scss']
 })
-export class BookOverviewComponent {
-  books: Book[] = [];
+export class BookOverviewComponent implements OnInit, OnDestroy {
+  readonly bookService: BookService;
+  readonly books$: Observable<Book[]>;
   selectedBook: Book | null = null;
 
   constructor() {
-    const books = new BookService();
-    const bookResultPromise = books.findAll();
-    bookResultPromise
-      .then(
-        resultBooks => {
-          console.log('Books are there...');
-          this.books = resultBooks;
-        },
-        () => this.books = []
-      )
-    console.log('Constructor finished...');
+    this.bookService = new BookService();
+    this.books$ = this.bookService.findAll();
+  }
+
+  ngOnInit(): void {
+    // this.books$.pipe()
+
+  }
+
+  ngOnDestroy(): void {
+    // this.subscription?.unsubscribe();
   }
 
   selectBook(book: Book): void {
@@ -33,7 +35,8 @@ export class BookOverviewComponent {
     return this.selectedBook === book;
   }
 
-  updateBooksWith(updatedBook: Book) {
-    console.log(updatedBook);
+  updateBooksWith(book: Book) {
+    this.bookService.update(book)
+      .subscribe(updatedBook => this.selectedBook = updatedBook);
   }
 }

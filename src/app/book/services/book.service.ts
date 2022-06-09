@@ -1,35 +1,39 @@
 import {Book} from '../model/book';
-
-export type FindAllCallbackFn = (books: Book[]) => void;
+import {BehaviorSubject, Observable} from 'rxjs';
 
 export class BookService {
-  private readonly books: Book[] = [
+  private readonly booksSubject = new BehaviorSubject<Book[]>([
     {
+      id: 0,
       author: 'John Smith',
       title: 'Angular for nerds'
     },
     {
+      id: 1,
       author: 'J. K. Rowling',
       title: 'Harry Potter'
     },
     {
+      id: 2,
       author: 'Stephen King',
       title: 'It'
     }
-  ];
+  ]);
+  readonly books$ = this.booksSubject.asObservable();
 
-  findAll(): Promise<Book[]> {
-    return fetch('http://localhost/books')
-      .then(response => {
-        return response.json();
-      });
+  findAll(): Observable<Book[]> {
+    return this.books$;
+  }
 
+  update(bookToUpdate: Book): Observable<Book> {
+    return new Observable<Book>(subscriber => {
+      const newBook = {...bookToUpdate};
+      const currentBooks = this.booksSubject.getValue();
+      const newBooks = currentBooks.map(book => book.id === bookToUpdate.id ? newBook : book);
+      this.booksSubject.next(newBooks);
 
-    // return new Promise<Book[]>((resolve, fail) => {
-    //   setTimeout(() => {
-    //     // resolve(this.books);
-    //     fail('Could not connect to server');
-    //   }, 2000);
-    // });
+      subscriber.next(newBook);
+      subscriber.complete();
+    });
   }
 }
