@@ -3,3 +3,5 @@ export interface Book {
   author: string;
   title: string;
 }
+
+export type BookProperties = Omit<Book, 'id'>;

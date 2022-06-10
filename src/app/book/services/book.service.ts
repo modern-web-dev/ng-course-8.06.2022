@@ -1,20 +1,22 @@
-import {Book} from '../model/book';
-import {BehaviorSubject, delay, Observable, of} from 'rxjs';
+import {Book, BookProperties} from '../model/book';
+import {BehaviorSubject, delay, Observable} from 'rxjs';
 
 export class BookService {
+  private idSeq = 0;
+
   private readonly booksSubject = new BehaviorSubject<Book[]>([
     {
-      id: 0,
+      id: this.idSeq++,
       author: 'John Smith',
       title: 'Angular for nerds'
     },
     {
-      id: 1,
+      id: this.idSeq++,
       author: 'J. K. Rowling',
       title: 'Harry Potter'
     },
     {
-      id: 2,
+      id: this.idSeq++,
       author: 'Stephen King',
       title: 'It'
     }
@@ -37,7 +39,27 @@ export class BookService {
     });
   }
 
-  search(query: string): Observable<string[]> {
-    return of([`${query}-1`, `${query}-2`, `${query}-3`]).pipe(delay(2000));
+  save(newBook: BookProperties): Observable<Book> {
+    return new Observable<Book>(subscriber => {
+      const book = {...newBook, id: this.idSeq++};
+      const currentBooks = this.booksSubject.getValue();
+      const newBooks = [...currentBooks, book];
+      this.booksSubject.next(newBooks);
+      subscriber.next(book);
+      subscriber.complete();
+    });
+  }
+
+  getOne(bookId: number): Observable<Book> {
+    return new Observable<Book>(subscriber => {
+      const currentBooks = this.booksSubject.getValue();
+      const foundBook = currentBooks.find(book => book.id === bookId);
+      if (foundBook) {
+        subscriber.next(foundBook);
+        subscriber.complete();
+      } else {
+        subscriber.error(`Book with ID ${bookId} could not be found!`);
+      }
+    });
   }
 }
