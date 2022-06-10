@@ -1,0 +1,24 @@
+{
+  "books": [
+    {
+      "id": 0,
+      "author": "John Smith",
+      "title": "Angular for nerds"
+    },
+    {
+      "id": 1,
+      "author": "J. K. Rowling",
+      "title": "Harry Potter"
+    },
+    {
+      "author": "Stephen Ki",
+      "title": "Itgfg",
+      "id": 2
+    },
+    {
+      "author": "fewrfewf",
+      "title": "fwefwfg",
+      "id": 3
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import {RouterModule} from '@angular/router';
 import {BookOverviewComponent} from './book/components/book-overview/book-overview.component';
 import {BookDetailsComponent} from './book/components/book-details/book-details.component';
 import {BookResolver} from './book/components/book-details/book.resolver';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import {BookResolver} from './book/components/book-details/book.resolver';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     RouterModule.forRoot([
       {path: '', redirectTo: '/books', pathMatch: 'full'},
       {
