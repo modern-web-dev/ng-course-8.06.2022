@@ -3,3 +3,7 @@ $primary: #027bb6;
 $enable-rounded: false;
 
 @import "~bootstrap/scss/bootstrap";
+
+.ng-invalid.ng-touched {
+  @extend .is-invalid
+}
